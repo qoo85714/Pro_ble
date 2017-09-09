@@ -83,9 +83,10 @@ public class BluetoothClient implements IBluetoothClient {
     public void write(String mac, UUID service, UUID character, byte[] value, BleWriteResponse response) {
         BluetoothLog.v(String.format("write character for %s: service = %s, character = %s, value = %s",
                 mac, service, character, ByteUtils.byteToString(value)));
+        byte[] write = hex2Byte("5a d5 05 26 01 02 aa 00 c0 00 00 00 00 aa");
 
         //response = ProxyUtils.getUIProxy(response);
-        mClient.write(mac, service, character, value, new BleWriteResponse() {
+        mClient.write(mac, service, character, write, new BleWriteResponse() {
 
             @Override
             public void onResponse(int code) {
@@ -95,6 +96,8 @@ public class BluetoothClient implements IBluetoothClient {
                     Log.i("brad:","write:REQUEST_SUCCESS");
 
 
+                }else {
+                    Log.i("brad:","write:REQUEST_FAIL");
                 }
             }
         });
@@ -301,5 +304,13 @@ public class BluetoothClient implements IBluetoothClient {
              }
            return sb.toString();
        }
+    public byte[] hex2Byte(String hexString) {
+         byte[] bytes = new byte[hexString.length() / 2];
+          for (int i=0 ; i<bytes.length ; i++) {
+            bytes[i] =
+                    (byte) Integer.parseInt(hexString.substring(2 * i, 2 * i + 2), 16);
+            }
+        return bytes;
+    }
 
 }
